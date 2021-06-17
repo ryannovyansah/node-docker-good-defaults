@@ -1,0 +1,35 @@
+- hosts: server
+  vars:
+  - image: ryannovyansah/nodejs-jenkins-docker-demo
+  tasks:
+    - name: install python-docker di ubuntu
+      apt:
+        name: 
+          - python3
+          - python3-docker
+          - python
+          - python-docker
+        state: present
+      when: ansible_distribution == "Ubuntu"
+    - name: install python-docker centos
+      yum:
+        name:
+          - python
+          - python-docker
+        state: present
+      when: ansible_distribution == "CentOS"
+    - name: pull image docker
+      docker_image:
+        name: "{{ image }}"
+        state: present
+        force: yes
+    - name: create containers
+      docker_container:
+        name: nodejs-jenkins-ansible
+        image: "{{ image }}"
+        state: started
+        published_ports:
+        - 3000:3000
+        - 9229:9229
+        - 9230:9230
+        recreate: yes
